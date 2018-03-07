@@ -1,11 +1,21 @@
 import * as Koa from "koa";
 import * as Router from "koa-router";
+import * as bodyParser from "koa-bodyparser";
+
+import AuthControllerFactory from "./controllers/AuthController";
+import AuthServiceFactory from "./services/AuthService";
+
+const dbFactory = {};
+
+const AuthService = new AuthServiceFactory(dbFactory);
+const AuthController = new AuthControllerFactory(AuthService);
 
 const app = new Koa();
 const router = new Router();
 
-router.get("/*", async ctx => {
-  ctx.body = "Hello2 2";
+app.use(bodyParser());
+router.post("/login", async ctx => {
+  AuthController.login(ctx);
 });
 
 app.use(router.routes());
