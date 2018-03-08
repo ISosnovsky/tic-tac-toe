@@ -1,21 +1,16 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const Koa = require("koa");
-const Router = require("koa-router");
-const app = new Koa();
-const router = new Router();
-router.get("/*", (ctx) => __awaiter(this, void 0, void 0, function* () {
-    ctx.body = "Hello2 2";
-}));
-app.use(router.routes());
-app.listen(3000);
-console.log("Server running on  3000");
+const sequelize_typescript_1 = require("sequelize-typescript");
+const User_1 = require("./models/User");
+const sequelize = new sequelize_typescript_1.Sequelize({
+    database: "tic-tac-toe",
+    dialect: "postgres",
+    username: "Ilya",
+    password: "",
+    storage: ":memory:"
+});
+sequelize.addModels([User_1.default]);
+sequelize.sync();
+const person = new User_1.default({ name: "111111111111111", age: 99 });
+person.save();
 //# sourceMappingURL=server.js.map

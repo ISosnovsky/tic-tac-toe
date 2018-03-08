@@ -15,11 +15,10 @@ const router = new Router();
 
 app.use(bodyParser());
 router.post("/login", async ctx => {
-  AuthController.login(ctx);
+	AuthController.login(ctx);
 });
 
 app.use(router.routes());
 
 app.listen(3000);
-
 console.log("Server running on  3000");
