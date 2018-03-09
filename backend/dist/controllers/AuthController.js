@@ -4,10 +4,9 @@ class AuthController {
     constructor(authService) {
         this.authService = authService;
     }
-    login(ctx) {
-        const userName = ctx.request.body.name;
-        const userPassword = ctx.request.body.password;
-        this.authService.login({ userName, userPassword });
+    register(ctx) {
+        const { name: userName, password: userPassword, email: userEmail } = ctx.request.body;
+        this.authService.register({ userName, userPassword, userEmail });
     }
 }
 exports.default = AuthController;

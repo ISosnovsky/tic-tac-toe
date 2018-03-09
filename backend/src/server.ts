@@ -2,23 +2,28 @@ import * as Koa from "koa";
 import * as Router from "koa-router";
 import * as bodyParser from "koa-bodyparser";
 
+import sequelize from "./db";
+import config from "./config";
+
 import AuthControllerFactory from "./controllers/AuthController";
 import AuthServiceFactory from "./services/AuthService";
+import AuthRepositoryFactory from "./repositories/AuthRepository";
 
-const dbFactory = {};
-
-const AuthService = new AuthServiceFactory(dbFactory);
+const AuthRepository = new AuthRepositoryFactory();
+const AuthService = new AuthServiceFactory(AuthRepository);
 const AuthController = new AuthControllerFactory(AuthService);
 
 const app = new Koa();
 const router = new Router();
 
+sequelize.sync({ force: true });
+
 app.use(bodyParser());
-router.post("/login", async ctx => {
-	AuthController.login(ctx);
+
+router.post("/join", async ctx => {
+	AuthController.join(ctx);
 });
 
-app.use(router.routes());
-
-app.listen(3000);
-console.log("Server running on  3000");
+app.listen(config.port, () => {
+	console.log(`Server running on ${config.port}`);
+});
