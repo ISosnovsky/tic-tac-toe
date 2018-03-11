@@ -4,9 +4,9 @@ class AuthController {
     constructor(authService) {
         this.authService = authService;
     }
-    register(ctx) {
+    join(ctx) {
         const { name: userName, password: userPassword, email: userEmail } = ctx.request.body;
-        this.authService.register({ userName, userPassword, userEmail });
+        this.authService.join({ userName, userPassword, userEmail });
     }
 }
 exports.default = AuthController;

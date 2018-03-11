@@ -8,6 +8,7 @@ exports.default = new sequelize_typescript_1.Sequelize({
     username: "Ilya",
     password: "",
     storage: ":memory:",
-    modelPaths: [__dirname + "/models"]
+    modelPaths: [__dirname + "/models"],
+    operatorsAliases: false
 });
 //# sourceMappingURL=index.js.map

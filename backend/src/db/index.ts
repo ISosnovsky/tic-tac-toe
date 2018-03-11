@@ -7,5 +7,6 @@ export default new Sequelize({
 	username: "Ilya",
 	password: "",
 	storage: ":memory:",
-	modelPaths: [__dirname + "/models"]
+	modelPaths: [__dirname + "/models"],
+	operatorsAliases: false
 });

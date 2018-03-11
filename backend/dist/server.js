@@ -26,7 +26,6 @@ app.use(bodyParser());
 router.post("/join", (ctx) => __awaiter(this, void 0, void 0, function* () {
     AuthController.join(ctx);
 }));
-app.use(router.routes());
 app.listen(config_1.default.port, () => {
     console.log(`Server running on ${config_1.default.port}`);
 });

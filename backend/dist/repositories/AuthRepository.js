@@ -9,7 +9,7 @@ class AuthRepository {
             email: userEmail
         });
     }
-    checkIfExistsUserByEmail(userEmail) {
+    checkIfUserExistsByEmail(userEmail) {
         return User_1.default.findOne({ where: { email: userEmail } });
     }
 }
