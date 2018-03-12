@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const User_1 = require("./../db/models/User");
 class AuthRepository {
     createUser({ userName, userPassword, userEmail }) {
+        console.log(userName, userPassword, userEmail);
         return User_1.default.create({
             name: userName,
             password: userPassword,

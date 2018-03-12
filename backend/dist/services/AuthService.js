@@ -15,11 +15,6 @@ class AuthService {
     join({ userName, userPassword, userEmail }) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const user = yield this.authRepository.checkIfUserExistsByEmail(userEmail);
-                if (user) {
-                    console.log("а такой уже есть!!!!!!!!!!!", user);
-                    return;
-                }
                 this.registeredUser = yield this.authRepository.createUser({
                     userName,
                     userPassword,
@@ -28,6 +23,11 @@ class AuthService {
             }
             catch (e) {
                 console.log("опачки нихуя се", e);
+            }
+            const user = yield this.authRepository.checkIfUserExistsByEmail(userEmail);
+            if (user) {
+                console.log("а такой уже есть!!!!!!!!!!!", user);
+                return;
             }
         });
     }
