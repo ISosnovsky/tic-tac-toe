@@ -3,10 +3,13 @@ import * as Router from "koa-router";
 import * as bodyParser from "koa-bodyparser";
 import * as passport from "koa-passport";
 import * as session from "koa-session";
+import * as send from "koa-send";
+
 const VKontakteStrategy = require("passport-vkontakte").Strategy;
 
 import sequelize from "./db";
 import config from "./config";
+import User from "./db/models/User";
 
 import AuthControllerFactory from "./controllers/AuthController";
 import AuthServiceFactory from "./services/AuthService";
@@ -17,65 +20,76 @@ const AuthService = new AuthServiceFactory(AuthRepository);
 const AuthController = new AuthControllerFactory(AuthService);
 
 const app = new Koa();
-const router = new Router({
-	prefix: "/api"
-});
+const router = new Router();
 
 sequelize.sync({ force: true });
 
 router.post("/join", async ctx => {
 	AuthController.join(ctx);
 });
-
-app.keys = ["secret"];
-
+app.keys = ["asdasd"];
 app
 	.use(bodyParser())
-	.use(router.routes())
-	.use(session({}, app))
+	.use(session(app))
 	.use(passport.initialize())
-	.use(passport.session());
+	.use(passport.session())
+	.use(router.routes());
 
 passport.use(
 	new VKontakteStrategy(
 		{
 			clientID: "6405800",
-			clientSecret: "JL1BXqyTkRpDRnwbd7oJ",
+			clientSecret: "CblmEOUs5qGAIJbDSmly",
 			callbackURL: "http://localhost:3000/auth/vkontakte/callback"
 		},
 		function myVerifyCallbackFn(
 			accessToken: string,
 			refreshToken: string,
-			params: string,
-			profile: string,
-			done: () => void
+			params: object,
+			profile: any,
+			done: (err: any, user: any) => void
 		) {
-			// // Now that we have user's `profile` as seen by VK, we can
-			// // use it to find corresponding database records on our side.
-			// // Also we have user's `params` that contains email address (if set in
-			// // scope), token lifetime, etc.
-			// // Here, we have a hypothetical `User` class which does what it says.
-			// User.findOrCreate({ vkontakteId: profile.id })
-			// 	.then(function(user) {
-			// 		done(null, user);
-			// 	})
-			// 	.catch(done);
+			console.log("myVerifyCallbackFn");
+			User.findOrCreate({ where: { id: profile.id } })
+				.then(function(user: [User, boolean]) {
+					console.log("doneeeee", done);
+					done(null, user);
+				})
+				.catch(function(err: [User, boolean]) {
+					done(err, null);
+				});
 		}
 	)
 );
 
-// User session support for our hypothetical `user` objects.
-// passport.serializeUser(function(user, done) {
-// 	done(null, user.id);
-// });
+passport.serializeUser(function(user, done) {
+	console.log("serializeUser");
+	done(null, user);
+});
 
-// passport.deserializeUser(function(id, done) {
-// 	User.findById(id)
-// 		.then(function(user) {
-// 			done(null, user);
-// 		})
-// 		.catch(done);
-// });
+passport.deserializeUser(function(id: any, done) {
+	console.log("deserializeUser");
+	User.findById(id.id)
+		.then(function(user: User) {
+			done(null, user);
+		})
+		.catch(done);
+});
+
+router.get("/join", async ctx => {
+	console.log("JOIN");
+	await send(ctx, "src/public/index.html");
+});
+
+router.get("/auth", passport.authenticate("vkontakte"));
+
+router.get("/auth/vkontakte/callback", async (ctx, next) => {
+	console.log("/auth/vkontakte/callback");
+	passport.authenticate("vkontakte", {
+		successRedirect: "/join",
+		failureRedirect: "/join228"
+	})(ctx, next);
+});
 
 app.listen(config.port, () => {
 	console.log(`Server running on ${config.port}`);
