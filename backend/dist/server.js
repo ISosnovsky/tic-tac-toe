@@ -37,7 +37,8 @@ app
     .use(passport.initialize())
     .use(passport.session())
     .use(router.routes());
-router.get("/join", (ctx) => __awaiter(this, void 0, void 0, function* () {
+router.get("/join", (ctx, next) => __awaiter(this, void 0, void 0, function* () {
+    console.log("ОЩШТ");
     yield send(ctx, "src/public/index.html");
 }));
 router.get("/auth/vkontakte", passport.authenticate("vkontakte", { scope: "email" }));
@@ -52,24 +53,35 @@ passport.use(new VKontakteStrategy({
 }, function myVerifyCallbackFn(accessToken, refreshToken, params, profile, done) {
     User_1.default.findOrCreate({ where: { id: profile.id } })
         .then((user) => {
-        done(null, user);
+        done(null, user[0]);
     })
         .catch((err) => {
         done(err, null);
     });
 }));
 passport.serializeUser((user, done) => {
-    console.log("sdfsdfsdfsdf", user);
-    done(null, user);
+    done(null, user.id);
 });
-passport.deserializeUser((user, done) => {
-    console.log("deserializeUserdeserializeUser");
-    User_1.default.findById(user.id)
+passport.deserializeUser((id, done) => {
+    console.log("deserialize", id);
+    User_1.default.findById(id)
         .then((foundUser) => {
-        done(null, foundUser);
+        done(null, "ого" + "пиздярики");
     })
         .catch(done);
 });
+app.use((ctx, next) => __awaiter(this, void 0, void 0, function* () {
+    console.log("uuuusssssseeeeee", ctx.state.user);
+    if (ctx.isAuthenticated()) {
+        ctx.type = "html";
+        ctx.body = { success: true };
+        yield next();
+    }
+    else {
+        ctx.body = { success: false };
+        ctx.throw(401);
+    }
+}));
 app.listen(config_1.default.port, () => {
     console.log(`Server running on ${config_1.default.port}`);
 });

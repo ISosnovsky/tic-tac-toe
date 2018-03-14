@@ -35,7 +35,8 @@ app
 	.use(passport.session())
 	.use(router.routes());
 
-router.get("/join", async ctx => {
+router.get("/join", async (ctx: any, next) => {
+	console.log("ОЩШТ");
 	await send(ctx, "src/public/index.html");
 });
 
@@ -68,7 +69,7 @@ passport.use(
 		) {
 			User.findOrCreate({ where: { id: profile.id } })
 				.then((user: [User, boolean]) => {
-					done(null, user);
+					done(null, user[0]);
 				})
 				.catch((err: [User, boolean]) => {
 					done(err, null);
@@ -78,17 +79,28 @@ passport.use(
 );
 
 passport.serializeUser((user: any, done) => {
-	console.log("sdfsdfsdfsdf", user);
-	done(null, user);
+	done(null, user.id);
 });
 
-passport.deserializeUser((user: any, done) => {
-	console.log("deserializeUserdeserializeUser");
-	User.findById(user.id)
+passport.deserializeUser((id: any, done) => {
+	console.log("deserialize", id);
+	User.findById(id)
 		.then((foundUser: User) => {
-			done(null, foundUser);
+			done(null, "ого" + "пиздярики");
 		})
 		.catch(done);
+});
+
+app.use(async (ctx, next) => {
+	console.log("uuuusssssseeeeee", ctx.state.user);
+	if (ctx.isAuthenticated()) {
+		ctx.type = "html";
+		ctx.body = { success: true };
+		await next();
+	} else {
+		ctx.body = { success: false };
+		ctx.throw(401);
+	}
 });
 
 app.listen(config.port, () => {

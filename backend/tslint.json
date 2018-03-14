@@ -1,43 +1,10 @@
 {
-	"rules": {
-		"class-name": true,
-		"comment-format": [true, "check-space"],
-		"indent": [true, "spaces"],
-		"one-line": [true, "check-open-brace", "check-whitespace"],
-		"no-var-keyword": true,
-		"quotemark": [true, "double", "avoid-escape"],
-		"semicolon": [true, "always", "ignore-bound-class-methods"],
-		"whitespace": [
-			true,
-			"check-branch",
-			"check-decl",
-			"check-operator",
-			"check-module",
-			"check-separator",
-			"check-type"
-		],
-		"typedef-whitespace": [
-			true,
-			{
-				"call-signature": "nospace",
-				"index-signature": "nospace",
-				"parameter": "nospace",
-				"property-declaration": "nospace",
-				"variable-declaration": "nospace"
-			},
-			{
-				"call-signature": "onespace",
-				"index-signature": "onespace",
-				"parameter": "onespace",
-				"property-declaration": "onespace",
-				"variable-declaration": "onespace"
-			}
-		],
-		"typedef": [true, "object-destructuring"],
-		"no-internal-module": true,
-		"no-trailing-whitespace": true,
-		"no-null-keyword": true,
-		"prefer-const": true,
-		"jsdoc-format": true
-	}
+	"passport": {
+		"user": [
+			{ "id": 14578399, "name": null, "email": null, "password": null },
+			true
+		]
+	},
+	"_expire": 1521135250991,
+	"_maxAge": 86400000
 }
