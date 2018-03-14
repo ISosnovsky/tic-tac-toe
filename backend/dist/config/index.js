@@ -4,6 +4,6 @@ exports.default = {
     database: "tic-tac-toe",
     dialect: "postgres",
     port: 3000,
-    name: "postgres"
+    name: "Ilya"
 };
 //# sourceMappingURL=index.js.map

@@ -37,45 +37,39 @@ app
     .use(passport.initialize())
     .use(passport.session())
     .use(router.routes());
+router.get("/join", (ctx) => __awaiter(this, void 0, void 0, function* () {
+    yield send(ctx, "src/public/index.html");
+}));
+router.get("/auth/vkontakte", passport.authenticate("vkontakte", { scope: "email" }));
+router.get("/auth/vkontakte/callback", passport.authenticate("vkontakte", {
+    successRedirect: "/join",
+    failureRedirect: "/login"
+}));
 passport.use(new VKontakteStrategy({
     clientID: "6405800",
     clientSecret: "CblmEOUs5qGAIJbDSmly",
     callbackURL: "http://localhost:3000/auth/vkontakte/callback"
 }, function myVerifyCallbackFn(accessToken, refreshToken, params, profile, done) {
-    console.log("myVerifyCallbackFn");
     User_1.default.findOrCreate({ where: { id: profile.id } })
-        .then(function (user) {
-        console.log("doneeeee", done);
+        .then((user) => {
         done(null, user);
     })
-        .catch(function (err) {
+        .catch((err) => {
         done(err, null);
     });
 }));
-passport.serializeUser(function (user, done) {
-    console.log("serializeUser");
+passport.serializeUser((user, done) => {
+    console.log("sdfsdfsdfsdf", user);
     done(null, user);
 });
-passport.deserializeUser(function (id, done) {
-    console.log("deserializeUser");
-    User_1.default.findById(id.id)
-        .then(function (user) {
-        done(null, user);
+passport.deserializeUser((user, done) => {
+    console.log("deserializeUserdeserializeUser");
+    User_1.default.findById(user.id)
+        .then((foundUser) => {
+        done(null, foundUser);
     })
         .catch(done);
 });
-router.get("/join", (ctx) => __awaiter(this, void 0, void 0, function* () {
-    console.log("JOIN");
-    yield send(ctx, "src/public/index.html");
-}));
-router.get("/auth", passport.authenticate("vkontakte"));
-router.get("/auth/vkontakte/callback", (ctx, next) => __awaiter(this, void 0, void 0, function* () {
-    console.log("/auth/vkontakte/callback");
-    passport.authenticate("vkontakte", {
-        successRedirect: "/join",
-        failureRedirect: "/join228"
-    })(ctx, next);
-}));
 app.listen(config_1.default.port, () => {
     console.log(`Server running on ${config_1.default.port}`);
 });

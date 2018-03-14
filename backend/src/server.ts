@@ -35,6 +35,23 @@ app
 	.use(passport.session())
 	.use(router.routes());
 
+router.get("/join", async ctx => {
+	await send(ctx, "src/public/index.html");
+});
+
+router.get(
+	"/auth/vkontakte",
+	passport.authenticate("vkontakte", { scope: "email" })
+);
+
+router.get(
+	"/auth/vkontakte/callback",
+	passport.authenticate("vkontakte", {
+		successRedirect: "/join",
+		failureRedirect: "/login"
+	})
+);
+
 passport.use(
 	new VKontakteStrategy(
 		{
@@ -49,46 +66,29 @@ passport.use(
 			profile: any,
 			done: (err: any, user: any) => void
 		) {
-			console.log("myVerifyCallbackFn");
 			User.findOrCreate({ where: { id: profile.id } })
-				.then(function(user: [User, boolean]) {
-					console.log("doneeeee", done);
+				.then((user: [User, boolean]) => {
 					done(null, user);
 				})
-				.catch(function(err: [User, boolean]) {
+				.catch((err: [User, boolean]) => {
 					done(err, null);
 				});
 		}
 	)
 );
 
-passport.serializeUser(function(user, done) {
-	console.log("serializeUser");
+passport.serializeUser((user: any, done) => {
+	console.log("sdfsdfsdfsdf", user);
 	done(null, user);
 });
 
-passport.deserializeUser(function(id: any, done) {
-	console.log("deserializeUser");
-	User.findById(id.id)
-		.then(function(user: User) {
-			done(null, user);
+passport.deserializeUser((user: any, done) => {
+	console.log("deserializeUserdeserializeUser");
+	User.findById(user.id)
+		.then((foundUser: User) => {
+			done(null, foundUser);
 		})
 		.catch(done);
-});
-
-router.get("/join", async ctx => {
-	console.log("JOIN");
-	await send(ctx, "src/public/index.html");
-});
-
-router.get("/auth", passport.authenticate("vkontakte"));
-
-router.get("/auth/vkontakte/callback", async (ctx, next) => {
-	console.log("/auth/vkontakte/callback");
-	passport.authenticate("vkontakte", {
-		successRedirect: "/join",
-		failureRedirect: "/join228"
-	})(ctx, next);
 });
 
 app.listen(config.port, () => {
