@@ -9,65 +9,23 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const Koa = require("koa");
-const Router = require("koa-router");
 const bodyParser = require("koa-bodyparser");
 const passport = require("koa-passport");
 const session = require("koa-session");
-const send = require("koa-send");
-const VKontakteStrategy = require("passport-vkontakte").Strategy;
 const db_1 = require("./db");
 const config_1 = require("./config");
-const User_1 = require("./db/models/User");
-const AuthController_1 = require("./controllers/AuthController");
-const AuthService_1 = require("./services/AuthService");
-const AuthRepository_1 = require("./repositories/AuthRepository");
-const AuthRepository = new AuthRepository_1.default();
-const AuthService = new AuthService_1.default(AuthRepository);
-const AuthController = new AuthController_1.default(AuthService);
+const routes_1 = require("./routes");
+require("./passport");
 const app = new Koa();
-const router = new Router();
 db_1.default.sync({ force: true });
-router.post("/join", (ctx) => __awaiter(this, void 0, void 0, function* () {
-    AuthController.join(ctx);
-}));
 app.keys = ["asdasd"];
 app
     .use(bodyParser())
     .use(session(app))
     .use(passport.initialize())
     .use(passport.session())
-    .use(router.routes());
-router.get("/join", (ctx, next) => __awaiter(this, void 0, void 0, function* () {
-    console.log("sesstion", ctx.session);
-    yield send(ctx, "src/public/index.html");
-}));
-router.get("/auth/vkontakte", passport.authenticate("vkontakte", { scope: "email" }));
-router.get("/auth/vkontakte/callback", passport.authenticate("vkontakte", {
-    successRedirect: "/join",
-    failureRedirect: "/login"
-}));
-passport.use(new VKontakteStrategy({
-    clientID: "6405800",
-    clientSecret: "CblmEOUs5qGAIJbDSmly",
-    callbackURL: "http://localhost:4000/auth/vkontakte/callback"
-}, function myVerifyCallbackFn(accessToken, refreshToken, params, profile, done) {
-    User_1.default.findOrCreate({ where: { id: profile.id } })
-        .then((user) => {
-        done(null, user[0]);
-    })
-        .catch((err) => {
-        done(err, null);
-    });
-}));
-passport.serializeUser((user, done) => {
-    done(null, user.id);
-});
-passport.deserializeUser((id, done) => {
-    console.log("deserialize", id);
-    done(null, id);
-});
+    .use(routes_1.default.routes());
 app.use((ctx, next) => __awaiter(this, void 0, void 0, function* () {
-    console.log("uuuusssssseeeeee", ctx.session);
     if (ctx.isAuthenticated()) {
         ctx.type = "html";
         ctx.body = { success: true };

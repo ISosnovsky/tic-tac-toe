@@ -1,32 +1,16 @@
 import * as Koa from "koa";
-import * as Router from "koa-router";
 import * as bodyParser from "koa-bodyparser";
 import * as passport from "koa-passport";
 import * as session from "koa-session";
-import * as send from "koa-send";
-
-const VKontakteStrategy = require("passport-vkontakte").Strategy;
 
 import sequelize from "./db";
 import config from "./config";
-import User from "./db/models/User";
+import router from "./routes";
 
-import AuthControllerFactory from "./controllers/AuthController";
-import AuthServiceFactory from "./services/AuthService";
-import AuthRepositoryFactory from "./repositories/AuthRepository";
-
-const AuthRepository = new AuthRepositoryFactory();
-const AuthService = new AuthServiceFactory(AuthRepository);
-const AuthController = new AuthControllerFactory(AuthService);
-
+import "./passport";
 const app = new Koa();
-const router = new Router();
 
 sequelize.sync({ force: true });
-
-router.post("/join", async ctx => {
-	AuthController.join(ctx);
-});
 
 app.keys = ["asdasd"];
 app
@@ -36,60 +20,7 @@ app
 	.use(passport.session())
 	.use(router.routes());
 
-router.get("/join", async (ctx: any, next) => {
-	console.log("sesstion", ctx.session);
-	await send(ctx, "src/public/index.html");
-});
-
-router.get(
-	"/auth/vkontakte",
-	passport.authenticate("vkontakte", { scope: "email" })
-);
-
-router.get(
-	"/auth/vkontakte/callback",
-	passport.authenticate("vkontakte", {
-		successRedirect: "/join",
-		failureRedirect: "/login"
-	})
-);
-
-passport.use(
-	new VKontakteStrategy(
-		{
-			clientID: "6405800",
-			clientSecret: "CblmEOUs5qGAIJbDSmly",
-			callbackURL: "http://localhost:4000/auth/vkontakte/callback"
-		},
-		function myVerifyCallbackFn(
-			accessToken: string,
-			refreshToken: string,
-			params: object,
-			profile: any,
-			done: (err: any, user: any) => void
-		) {
-			User.findOrCreate({ where: { id: profile.id } })
-				.then((user: [User, boolean]) => {
-					done(null, user[0]);
-				})
-				.catch((err: [User, boolean]) => {
-					done(err, null);
-				});
-		}
-	)
-);
-
-passport.serializeUser((user: any, done) => {
-	done(null, user.id);
-});
-
-passport.deserializeUser((id: any, done) => {
-	console.log("deserialize", id);
-	done(null, id);
-});
-
 app.use(async (ctx, next) => {
-	console.log("uuuusssssseeeeee", ctx.session);
 	if (ctx.isAuthenticated()) {
 		ctx.type = "html";
 		ctx.body = { success: true };
