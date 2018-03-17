@@ -38,7 +38,7 @@ app
     .use(passport.session())
     .use(router.routes());
 router.get("/join", (ctx, next) => __awaiter(this, void 0, void 0, function* () {
-    console.log("ОЩШТ");
+    console.log("sesstion", ctx.session);
     yield send(ctx, "src/public/index.html");
 }));
 router.get("/auth/vkontakte", passport.authenticate("vkontakte", { scope: "email" }));
@@ -49,7 +49,7 @@ router.get("/auth/vkontakte/callback", passport.authenticate("vkontakte", {
 passport.use(new VKontakteStrategy({
     clientID: "6405800",
     clientSecret: "CblmEOUs5qGAIJbDSmly",
-    callbackURL: "http://localhost:3000/auth/vkontakte/callback"
+    callbackURL: "http://localhost:4000/auth/vkontakte/callback"
 }, function myVerifyCallbackFn(accessToken, refreshToken, params, profile, done) {
     User_1.default.findOrCreate({ where: { id: profile.id } })
         .then((user) => {
@@ -64,14 +64,10 @@ passport.serializeUser((user, done) => {
 });
 passport.deserializeUser((id, done) => {
     console.log("deserialize", id);
-    User_1.default.findById(id)
-        .then((foundUser) => {
-        done(null, "ого" + "пиздярики");
-    })
-        .catch(done);
+    done(null, id);
 });
 app.use((ctx, next) => __awaiter(this, void 0, void 0, function* () {
-    console.log("uuuusssssseeeeee", ctx.state.user);
+    console.log("uuuusssssseeeeee", ctx.session);
     if (ctx.isAuthenticated()) {
         ctx.type = "html";
         ctx.body = { success: true };

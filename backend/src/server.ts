@@ -27,6 +27,7 @@ sequelize.sync({ force: true });
 router.post("/join", async ctx => {
 	AuthController.join(ctx);
 });
+
 app.keys = ["asdasd"];
 app
 	.use(bodyParser())
@@ -36,7 +37,7 @@ app
 	.use(router.routes());
 
 router.get("/join", async (ctx: any, next) => {
-	console.log("ОЩШТ");
+	console.log("sesstion", ctx.session);
 	await send(ctx, "src/public/index.html");
 });
 
@@ -58,7 +59,7 @@ passport.use(
 		{
 			clientID: "6405800",
 			clientSecret: "CblmEOUs5qGAIJbDSmly",
-			callbackURL: "http://localhost:3000/auth/vkontakte/callback"
+			callbackURL: "http://localhost:4000/auth/vkontakte/callback"
 		},
 		function myVerifyCallbackFn(
 			accessToken: string,
@@ -84,15 +85,11 @@ passport.serializeUser((user: any, done) => {
 
 passport.deserializeUser((id: any, done) => {
 	console.log("deserialize", id);
-	User.findById(id)
-		.then((foundUser: User) => {
-			done(null, "ого" + "пиздярики");
-		})
-		.catch(done);
+	done(null, id);
 });
 
 app.use(async (ctx, next) => {
-	console.log("uuuusssssseeeeee", ctx.state.user);
+	console.log("uuuusssssseeeeee", ctx.session);
 	if (ctx.isAuthenticated()) {
 		ctx.type = "html";
 		ctx.body = { success: true };
