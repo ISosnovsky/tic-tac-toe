@@ -1,27 +1,41 @@
 import * as Router from "koa-router";
-import * as passport from "koa-passport";
+import * as passport from "passport";
 
 class PassportRouter {
-	constructor(public router: Router) {
-		this.router = router;
-	}
+	constructor(
+		public router: Router,
+		public settings: {
+			authLink: string;
+			authCallbackLink: string;
+			strategyName: string;
+			userCredentional?: passport.AuthenticateOptions;
+			options?: passport.AuthenticateOptions;
+		}
+	) {}
 
-	askUserCredentials(
-		link: string,
-		strategyName: string,
-		userData?: { scope: string | Array<string> }
-	) {
-		this.authenticate(link, strategyName, userData);
-	}
-
-	getAccessToken(callbackLink: string, strategyName: string, settings?: any) {
-		this.authenticate(callbackLink, strategyName, settings);
-	}
-	authenticate(link: string, strategyName: string, settings?: any) {
+	private askUserCredentials(): void {
 		this.router.get(
-			link,
-			passport.authenticate(strategyName, Object.assign({}, settings))
+			this.settings.authLink,
+			passport.authenticate(
+				this.settings.strategyName,
+				Object.assign({}, this.settings.userCredentional)
+			)
 		);
+	}
+
+	private getAccessToken(): void {
+		this.router.get(
+			this.settings.authCallbackLink,
+			passport.authenticate(
+				this.settings.strategyName,
+				Object.assign({}, this.settings.options)
+			)
+		);
+	}
+
+	public init(): void {
+		this.askUserCredentials();
+		this.getAccessToken();
 	}
 }
 
