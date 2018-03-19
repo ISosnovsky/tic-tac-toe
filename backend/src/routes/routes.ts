@@ -1,18 +1,9 @@
 import * as Router from "koa-router";
-import * as send from "koa-send";
+
+const router = new Router();
 
 import ApiRouter from "./api";
 import PassportRouterFactory from "./passport";
-
-import AuthControllerFactory from "../controllers/AuthController";
-import AuthServiceFactory from "../services/AuthService";
-import AuthRepositoryFactory from "../repositories/AuthRepository";
-
-const AuthRepository = new AuthRepositoryFactory();
-const AuthService = new AuthServiceFactory(AuthRepository);
-const AuthController = new AuthControllerFactory(AuthService);
-
-const router = new Router();
 
 const apiRouterAuth = new ApiRouter(router);
 
@@ -38,4 +29,4 @@ router.get("/join", async (ctx: any, next) => {
 	await send(ctx, "src/public/index.html");
 });
 
-export default router;
+export { apiRouterAuth, vkPassportRouter };

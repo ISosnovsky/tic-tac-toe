@@ -1,22 +1,14 @@
 import * as Router from "koa-router";
-
-import AuthControllerFactory from "../controllers/AuthController";
-import AuthServiceFactory from "../services/AuthService";
-import AuthRepositoryFactory from "../repositories/AuthRepository";
-
-const AuthRepository = new AuthRepositoryFactory();
-const AuthService = new AuthServiceFactory(AuthRepository);
-const AuthController = new AuthControllerFactory(AuthService);
+import { Middleware } from "koa-compose";
+import { Context } from "koa";
 
 class ApiRouter {
 	constructor(public router: Router) {
 		this.router = router;
 	}
 
-	post() {
-		this.router.post("/join", async ctx => {
-			await AuthController.join(ctx);
-		});
+	post(path: string, middleware: Middleware<Context>): void {
+		this.router.post(`v1/api/${path}`, middleware);
 	}
 }
 

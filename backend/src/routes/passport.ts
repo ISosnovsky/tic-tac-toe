@@ -33,7 +33,7 @@ class PassportRouter {
 		);
 	}
 
-	public init(): void {
+	public register(): void {
 		this.askUserCredentials();
 		this.getAccessToken();
 	}
